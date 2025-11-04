@@ -5,13 +5,15 @@ int main(void) {
 	// str_alloc(&str, 64);
 	// str_fmt(&str, "time: %d,%s", 35, "main");
 	
-	str_init(&str, "Some Numbers LIKE aa%123-type-stuff are boRing.");
+	// str_init(&str, "some Numbers #LIKE aa%123-type-stuff are boRing.");
 	// str_toupper(&str);
 	// str_cat(str);
 	// str_tolower(&str);
 	// str_cat(str);
-	str_topascal(&str);
 	// str_tocamel(&str);
+	// str_topascal(&str);
+	str_init(&str, "num LI#KE some");
+	str_tosnake(&str);
 	str_cat(str);
 	str_free(&str);
 

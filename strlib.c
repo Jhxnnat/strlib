@@ -162,7 +162,7 @@ bool is_letter(char c) {
 }
 
 bool is_spacing(char c) {
-	return ((c == 32) || (c == '\n') || (c == '\t'));
+	return ((c == ' ') || (c == '\n') || (c == '\t'));
 }
 
 bool is_symbol(char c) {
@@ -184,15 +184,20 @@ void str_tolower(string_t* str) {
 }
 
 void str_topascal(string_t* str) {
-	size_t i = 1;
-	while (i < str->size) {
+	bool do_upper = true;
+	for (size_t i = 0; i < str->size; ++i) {
 		if (is_spacing(str->data[i]) || is_symbol(str->data[i])) {
 			str_delete(str, i, i);
-			str->data[i] = upper(str->data[i]);
-		} else if (is_letter(str->data[i])) {
-			str->data[i] = lower(str->data[i]);
+			--i;
+			do_upper = true;
+			continue;
 		}
-		i++;
+		if (!do_upper) {
+			str->data[i] = lower(str->data[i]);
+		} else if (do_upper) {
+			str->data[i] = upper(str->data[i]);
+			do_upper = false;
+		}
 	}
 }
 
@@ -202,4 +207,15 @@ void str_tocamel(string_t* str) {
 }
 
 void str_tosnake(string_t* str) {
+	for (size_t i = 0; i < str->size; ++i) {
+		if (is_spacing(str->data[i])) {
+			str->data[i] = '_';
+		}
+		else if (is_symbol(str->data[i])) {
+			str_delete(str, i, i);
+			i--;
+		} else if (is_letter(str->data[i])) {
+			str->data[i] = lower(str->data[i]);
+		}
+	}
 }

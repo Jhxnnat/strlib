@@ -26,19 +26,21 @@ bool str_delete(string_t* dest, size_t start, size_t end);
 
 void str_fmt(string_t* s, const char *format, ...);
 
+// IDEA: make this functions take char*, size_t from, size_t to
+// arguments, so this becomes more 'universal'
 void str_toupper(string_t* str);
 void str_tolower(string_t* str);
 void str_topascal(string_t* str);
 void str_tocamel(string_t* str);
-
-// === TODO ===
-//
-//
-string_t str_fmt_int(int value, size_t total, size_t dec);
-
 void str_tosnake(string_t* str);
-// int str_tointeger(const char *text);
-// float str_tofloat(const char *text);
+
+string_t str_digits(const char* s); // get only the numbers on a string
+
+
+// === TODO SECTION ===
+
+// formating decimals
+string_t str_fmt_dec(int value, size_t total, size_t dec);
 
 // return the character position of an instance 
 // of a char of a sub-string within a string
@@ -55,8 +57,5 @@ bool str_ends_with(string_t str, const char* substr);
 
 // return the amount of times the given substring appears
 size_t str_count(string_t str, const char* substr);
-
-// parse a string and get only the numbers on it
-string_t str_digits(const char* s);
 
 #endif // strlib_h
