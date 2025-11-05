@@ -4,7 +4,7 @@
 
 C string library without using `string.h` header.
 
-This library is inpired by the [Simple Dynamic Strings](https://github.com/antirez/sds) library in a even simplier way.
+This library is inspired by the [Simple Dynamic Strings](https://github.com/antirez/sds) library in a even simplier way.
 Strings are heap allocated and have a header wich stores information like capacity and length. The rest is the actual string.
 
 There are multiple functions, the following sources are used for inspiration:
