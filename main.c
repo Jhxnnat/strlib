@@ -1,47 +1,23 @@
 #include "strlib.h"
 
 int main(void) {
-	string_t str;
-	// str_alloc(&str, 64);
-	// str_fmt(&str, "time: %d,%s", 35, "main");
-	
-	// str_init(&str, "some Numbers #LIKE aa%123-type-stuff are boRing.");
-	// str_toupper(&str);
-	// str_cat(str);
-	// str_tolower(&str);
-	// str_cat(str);
-	// str_tocamel(&str);
-	// str_topascal(&str);
-	str_init(&str, "num LI#KE some");
-	str_tosnake(&str);
-	str_cat(str);
-	str_free(&str);
+	strt s = strnew("Loremp.");
+	s = strtcatlen(s, " Ipsum.", 7);
+	printf("%s - %d\n", s, strtlen(s));
 
-	// string_t str;
-	// str_init(&str, "magic..thing");
-	// str_cat(str);
-	//
-	// bool e = str_insert(&str, "resistancee", 5);
-	// if (e) {
-	// 	printf("insert error\n");
-	// 	exit(1);
-	// }
-	// str_cat(str);
-	//
-	// e = str_concat(&str, "...");
-	// if (e) {
-	// 	printf("concat error\n");
-	// 	exit(1);
-	// }
-	// str_cat(str);
-	//
-	// e = str_delete(&str, 0, 5);
-	// if (e) {
-	// 	printf("delete error\n");
-	// 	exit(1);
-	// }
-	// str_cat(str);
-	// str_free(&str);
+	// strt s2;
+	// s2 = strfmt(s2, "dolor sit(%d) amet magic.", 77);
+	// printf("%s\n", s2);
 
+	// s2 = strupper(s2);
+	// s2 = strdelete(s2, 5, 5);
+	//
+	// strt s3 = strnew("not in #pascal case!");
+	// strt s4 = strpascal(s3);
+	//
+	strfree(s);
+	// strfree(s2);
+	// strfree(s3);
+	// strfree(s4);
 	return 0;
 }
