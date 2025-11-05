@@ -84,6 +84,10 @@ size_t strtlen(const strt s) {
 	return ((struct string_t *)((s)-(sizeof(struct string_t))))->len;
 }
 
+size_t strtcap(const strt s) {
+	return ((struct string_t *)((s)-(sizeof(struct string_t))))->cap;
+}
+
 strt strtcatlen(strt s, const char* src, size_t len) {
 	size_t s_len = strtlen(s);
 	
@@ -98,13 +102,22 @@ strt strtcatlen(strt s, const char* src, size_t len) {
 	return s;
 }
 
-// TODO
-// strt strfmt(strt _s, char * fmt, ...) {
-// 	va_list ap;
-// 	char* s;
-// 	va_start(ap, fmt);
-//
-// 	va_end(ap);
-// 	return s;
-// }
+strt strtcat(strt s, const char* src) {
+	size_t len = str_len(src);
+	return strtcatlen(s, src, len);
+}
+
+strt strfmt(strt _s, char * fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	
+	int fmt_len = vsnprintf(NULL, 0, fmt, args);
+
+	va_start(args, fmt);
+	char s[fmt_len+1];
+	int __len = vsnprintf(s, fmt_len+1, fmt, args);
+	va_end(args);
+
+	return (strtcatlen(_s, s, fmt_len));
+}
 
