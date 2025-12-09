@@ -1,10 +1,12 @@
+#include <stdio.h>
 #include "strlib.h"
 
 #define STR_GROW_FACTOR 2
 
-#define strt_header(__s) (void*)((__s)-(sizeof(struct string_t)))
+#define str_header(__s) ((void*)((__s)-(sizeof(struct string_t))))
+#define SHD(__s) ((struct string_t*)((__s)-(sizeof(struct string_t))))
 
-static size_t str_len(const char* s) {
+size_t str_len(const char* s) {
 	size_t i = 0;
 	while (s[++i] != '\0');
 	return i;
@@ -34,30 +36,40 @@ static void str_set(char* dest, int c, size_t n) {
 	}
 }
 
-size_t strt_get_space(strt s) {
-	struct string_t *sh = strt_header(s);
+static bool char_is_space(char c) {
+	return (c == ' ' || c == '\n' || c == '\t');
+}
+
+size_t str_get_space(str s) {
+	struct string_t *sh = str_header(s);
 	return sh->cap - sh->len;
 }
 
-strt strt_grow(strt s, size_t len) {
+void str_set_len(str s, size_t len) {
+	struct string_t *sh = (struct string_t*)((s)-(sizeof(struct string_t)));
+	sh->len = len;
+}
+
+str str_grow(str s, size_t len) {
 	size_t header_size = sizeof(struct string_t);
-	struct string_t *header = strt_header(s);
-	size_t space = header->cap - header->len;
+	// TODO: use str_header
+	struct string_t *sh = (void*)((s)-(sizeof(struct string_t)));
+
+	size_t space = sh->cap - sh->len;
 	if (space >= len) return s;
 
-	header->cap += len;
-	size_t newcap = header->cap;
+	sh = realloc(sh, header_size+sh->cap+len);
+	if (sh == NULL) return NULL;
+	sh->cap += len;
 
-	header = realloc(header, header_size+newcap);
-	if (header == NULL) return NULL;
 	return s;
 }
 
-strt strnew(const char* src) {
+str strnew(const char* src) {
 	void *header;
-	strt s;
+	str s;
 
-	int srclen = str_len(src);
+	size_t srclen = str_len(src);
 	int headerlen = sizeof(struct string_t);
 	header = malloc(headerlen+srclen);
 	
@@ -76,38 +88,35 @@ strt strnew(const char* src) {
 	return s;
 }
 
-void strfree(strt s) {
+void strfree(str s) {
     free((char*)s-sizeof(struct string_t));
 }
 
-size_t strtlen(const strt s) {
+size_t strlen(str s) {
 	return ((struct string_t *)((s)-(sizeof(struct string_t))))->len;
 }
 
-size_t strtcap(const strt s) {
+size_t strcap(str s) {
 	return ((struct string_t *)((s)-(sizeof(struct string_t))))->cap;
 }
 
-strt strtcatlen(strt s, const char* src, size_t len) {
-	size_t s_len = strtlen(s);
-	
-	s = strt_grow(s, len);
-	if (s == NULL) return NULL;
+// TODO make use: str_n_copy(s+c_len, src, len);
+str strconcatlen(str s, const char* src, size_t len) {
+	size_t c_len = strlen(s);
 
-	// str_n_copy(s+s_len, src, len);
-	struct string_t *h = strt_header(s);
-	str_copy(s+h->len, src);
-	h->len += s_len;
-	s[s_len+len] = '\0';
+	s = str_grow(s, len);
+	if (s == NULL) return NULL;
+	str_copy(s+c_len, src);
+	str_set_len(s, c_len+len);
+	s[c_len+len] = '\0';
 	return s;
 }
 
-strt strtcat(strt s, const char* src) {
-	size_t len = str_len(src);
-	return strtcatlen(s, src, len);
+str strconcat(str s, const char* src) {
+	return strconcatlen(s, src, str_len(src));
 }
 
-strt strfmt(strt _s, char * fmt, ...) {
+str strfmt(str _s, char * fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
 	
@@ -118,6 +127,44 @@ strt strfmt(strt _s, char * fmt, ...) {
 	int __len = vsnprintf(s, fmt_len+1, fmt, args);
 	va_end(args);
 
-	return (strtcatlen(_s, s, fmt_len));
+	return (strconcatlen(_s, s, fmt_len));
+}
+
+str strdelete(str s, size_t pos) {
+	struct string_t *h = str_header(s);
+	if (h->len == 0 || pos > h->len) return NULL;
+	s[pos] = 0;
+	for (size_t i = pos; i < h->len; i++) {
+		s[i] = s[i+1];
+	}
+	h->len--;
+	return s;
+}
+
+str strtrim(str s) {
+	size_t len = strlen(s);
+	size_t i = 0;
+	while (i < len) {
+		if (char_is_space(s[i]))
+			s = strdelete(s, i);
+		else i++;
+	}
+	return s;
+}
+
+int str_find_sub(str s, const char* substr) {
+	size_t len = str_len(s);
+	size_t sub_len = str_len(substr);
+	size_t j = 0;
+	for (size_t i = 0; i < len; i++) {
+		while (s[i+j] == substr[j]) {
+			if (++j >= sub_len) return i;
+		}
+	}
+	return -1;
+}
+
+str strreplace(str s, const char* dest, const char* src) {
+	return s;
 }
 
