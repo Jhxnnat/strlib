@@ -1,10 +1,11 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include "strlib.h"
 
 #define STR_GROW_FACTOR 2
 
 #define str_header(__s) ((void*)((__s)-(sizeof(struct string_t))))
-#define SHD(__s) ((struct string_t*)((__s)-(sizeof(struct string_t))))
+// #define SHD(__s) ((struct string_t*)((__s)-(sizeof(struct string_t))))
 
 size_t str_len(const char* s) {
 	size_t i = 0;
@@ -65,14 +66,14 @@ str str_grow(str s, size_t len) {
 	return s;
 }
 
-str strnew(const char* src) {
+str str_new(const char* src) {
 	void *header;
 	str s;
 
 	size_t srclen = str_len(src);
 	int headerlen = sizeof(struct string_t);
 	header = malloc(headerlen+srclen);
-	
+
 	s = (char*)header+headerlen;
 
 	struct string_t *sh = (void*)((s)-(sizeof(struct string_t)));
@@ -88,21 +89,21 @@ str strnew(const char* src) {
 	return s;
 }
 
-void strfree(str s) {
+void str_free(str s) {
     free((char*)s-sizeof(struct string_t));
 }
 
-size_t strlen(str s) {
+size_t str_h_len(str s) {
 	return ((struct string_t *)((s)-(sizeof(struct string_t))))->len;
 }
 
-size_t strcap(str s) {
+size_t str_h_cap(str s) {
 	return ((struct string_t *)((s)-(sizeof(struct string_t))))->cap;
 }
 
 // TODO make use: str_n_copy(s+c_len, src, len);
-str strconcatlen(str s, const char* src, size_t len) {
-	size_t c_len = strlen(s);
+str str_concat_len(str s, const char* src, size_t len) {
+	size_t c_len = str_h_len(s);
 
 	s = str_grow(s, len);
 	if (s == NULL) return NULL;
@@ -112,14 +113,14 @@ str strconcatlen(str s, const char* src, size_t len) {
 	return s;
 }
 
-str strconcat(str s, const char* src) {
-	return strconcatlen(s, src, str_len(src));
+str str_concat(str s, const char* src) {
+	return str_concat_len(s, src, str_len(src));
 }
 
 str strfmt(str _s, char * fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	
+
 	int fmt_len = vsnprintf(NULL, 0, fmt, args);
 
 	va_start(args, fmt);
@@ -127,10 +128,10 @@ str strfmt(str _s, char * fmt, ...) {
 	int __len = vsnprintf(s, fmt_len+1, fmt, args);
 	va_end(args);
 
-	return (strconcatlen(_s, s, fmt_len));
+	return (str_concat_len(_s, s, fmt_len));
 }
 
-str strdelete(str s, size_t pos) {
+str str_delete(str s, size_t pos) {
 	struct string_t *h = str_header(s);
 	if (h->len == 0 || pos > h->len) return NULL;
 	s[pos] = 0;
@@ -141,12 +142,12 @@ str strdelete(str s, size_t pos) {
 	return s;
 }
 
-str strtrim(str s) {
-	size_t len = strlen(s);
+str str_trim(str s) {
+	size_t len = str_h_len(s);
 	size_t i = 0;
 	while (i < len) {
 		if (char_is_space(s[i]))
-			s = strdelete(s, i);
+			s = str_delete(s, i);
 		else i++;
 	}
 	return s;
@@ -164,7 +165,35 @@ int str_find_sub(str s, const char* substr) {
 	return -1;
 }
 
-str strreplace(str s, const char* dest, const char* src) {
+str str_insert(str s, const char* ins, size_t pos) {
+	size_t s_cap = str_h_cap(s);
+	size_t s_len = str_h_len(s);
+	size_t ins_len = str_len(ins);
+
+	if (pos > s_len) return s; //TODO: could throw error here?
+
+	size_t space = str_get_space(s);
+	if (space < ins_len) {
+		size_t grow_size = ins_len - space;
+		s = str_grow(s, grow_size);
+	}
+
+	// move to the right (right to left)
+	size_t final_len = s_len + ins_len;
+	for (size_t i = final_len; i >= pos+ins_len; i--) {
+		s[i] = s[i-ins_len];
+	}
+	// insert
+	for (size_t i = pos; i < ins_len+pos; i++) {
+		s[i] = ins[i-pos];
+	}
+
+	str_set_len(s, final_len);
+	s[str_h_len(s)] = '\0';
+
 	return s;
 }
 
+str strreplace(str s, const char* dest, const char* src) {
+	return s;
+}

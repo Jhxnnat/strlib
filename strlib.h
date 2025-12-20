@@ -1,8 +1,6 @@
 #ifndef strlib_h
 #define strlib_h
 
-// TODO: make test.c, assert all the functions work as intended
-
 #include <stdlib.h>
 #include <stdarg.h>
 
@@ -14,23 +12,38 @@ struct __attribute__((packed)) string_t {
 	char s[];
 };
 
+// return the lenght of a string (or char*).
 size_t str_len(const char* s);
 
+// allocates more memory for the given string and returns it
 str str_grow(str s, size_t len);
 
-//TODO: use snake case for all functions
-str strnew(const char* src);
-void strfree(str s);
-size_t strlen(const str s); //TODO: unuse this, use strheader instead for this
-str strconcatlen(str s, const char* src, size_t len);
-str strconcat(str s, const char* src);
-str strfmt(str _s, char * fmt, ...);
-str strdelete(str s, size_t pos);
-str strtrim(str s);
-int str_find_sub(str s, const char* substr); // returns start pos of substr, (-1) if not found
+// return a new string
+str str_new(const char* src);
 
+// free the string
+void str_free(str s);
+
+size_t str_h_len(str s);
+size_t str_h_cap(str s);
+str str_concat_len(str s, const char* src, size_t len);
+str str_concat(str s, const char* src);
+str str_fmt(str _s, char * fmt, ...);
+str str_delete(str s, size_t pos);
+
+// return string without whitespace
+str str_trim(str s);
+
+// returns start pos of substr, (-1) if not found
+int str_find_sub(str s, const char* substr);
+
+// inserts a string at a given position and returns it. return the same string if position overflows
 str str_insert(str s, const char* ins, size_t pos);
-str strreplace(str s, const char* dest, const char* src);
-str* strsplit(str s, const char* sub, size_t ret_len);
+
+// unimplemented
+str str_replace(str s, const char* dest, const char* src);
+
+// unimplemented
+str* str_split(str s, const char* sub, size_t ret_len); // caller frees
 
 #endif // strlib_h
