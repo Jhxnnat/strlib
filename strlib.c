@@ -194,6 +194,18 @@ str str_insert(str s, const char* ins, size_t pos) {
 	return s;
 }
 
-str strreplace(str s, const char* dest, const char* src) {
+str str_replace(str s, const char* dest, const char* src) {
+	size_t pos = (size_t)str_find_sub(s, dest);
+	if (pos < 0)
+		return s;
+	size_t dest_len = str_len(dest);
+	size_t src_len = str_len(src);
+
+	// insert text then delete remaining text
+	s = str_insert(s, src, pos);
+	for (size_t i = 0; i < dest_len; i++) {
+		s = str_delete(s, pos+src_len);
+	}
+
 	return s;
 }

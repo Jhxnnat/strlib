@@ -40,7 +40,7 @@ int str_find_sub(str s, const char* substr);
 // inserts a string at a given position and returns it. return the same string if position overflows
 str str_insert(str s, const char* ins, size_t pos);
 
-// unimplemented
+// replaces a substring with anoter
 str str_replace(str s, const char* dest, const char* src);
 
 // unimplemented
