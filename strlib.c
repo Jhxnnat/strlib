@@ -5,11 +5,10 @@
 #define STR_GROW_FACTOR 2
 
 #define str_header(__s) ((void*)((__s)-(sizeof(struct string_t))))
-// #define SHD(__s) ((struct string_t*)((__s)-(sizeof(struct string_t))))
 
 size_t str_len(const char* s) {
 	size_t i = 0;
-	while (s[++i] != '\0');
+	while (s[i] != '\0') { i++; }
 	return i;
 }
 
@@ -71,6 +70,7 @@ str str_new(const char* src) {
 	str s;
 
 	size_t srclen = str_len(src);
+
 	int headerlen = sizeof(struct string_t);
 	header = malloc(headerlen+srclen);
 
@@ -101,13 +101,11 @@ size_t str_h_cap(str s) {
 	return ((struct string_t *)((s)-(sizeof(struct string_t))))->cap;
 }
 
-// TODO make use: str_n_copy(s+c_len, src, len);
 str str_concat_len(str s, const char* src, size_t len) {
 	size_t c_len = str_h_len(s);
-
 	s = str_grow(s, len);
 	if (s == NULL) return NULL;
-	str_copy(s+c_len, src);
+	str_n_copy(s+c_len, src, len);
 	str_set_len(s, c_len+len);
 	s[c_len+len] = '\0';
 	return s;
@@ -170,7 +168,7 @@ str str_insert(str s, const char* ins, size_t pos) {
 	size_t s_len = str_h_len(s);
 	size_t ins_len = str_len(ins);
 
-	if (pos > s_len) return s; //TODO: could throw error here?
+	if (pos > s_len) return NULL;
 
 	size_t space = str_get_space(s);
 	if (space < ins_len) {
@@ -208,4 +206,40 @@ str str_replace(str s, const char* dest, const char* src) {
 	}
 
 	return s;
+}
+
+str* str_split(str s, const char* sep, int* elements) {
+	size_t sep_len = str_len(sep);
+	size_t s_len = str_len(s);
+
+	int index_list[128] = {0};
+	int index_pos = 0;
+	int index_acum = 0;
+	int index;
+	//TODO: if we split 2 times, then the list would be len=3
+	// so the last on the list is being ignored
+	while (true) {
+		int index = str_find_sub(s+index_acum, sep);
+		if (index < 0) break;
+		index_acum += index+sep_len;
+		index_list[index_pos++] = index_acum-sep_len;
+		printf(">>index: %d, %s\n", index, s+index_acum);
+	}
+
+	printf("index pos: %d\n", index_pos);
+	*elements = index_pos;
+	str* str_list = malloc(sizeof(struct string_t)*index_pos);
+	for (int i = 0; i < index_pos; i++) {
+		str_list[i] = str_new("");
+		if (i == 0) {
+			str_list[i] = str_concat_len(str_list[i], s, index_list[i]);
+			continue;
+		}
+		str_list[i] = str_concat_len(str_list[i], s+index_list[i-1]+sep_len, index_list[i] - index_list[i-1] - sep_len);
+	}
+
+	for (int i = 0; i < *elements; i++) {
+		printf("string: %s; len:%zu\n", str_list[i], str_len(str_list[i]));
+	}
+	return str_list;
 }
