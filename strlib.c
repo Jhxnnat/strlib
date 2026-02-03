@@ -216,19 +216,16 @@ str* str_split(str s, const char* sep, int* elements) {
 	int index_pos = 0;
 	int index_acum = 0;
 	int index;
-	//TODO: if we split 2 times, then the list would be len=3
-	// so the last on the list is being ignored
 	while (true) {
 		int index = str_find_sub(s+index_acum, sep);
-		if (index < 0) break;
+		if (index < 0) {
+			break;
+		}
 		index_acum += index+sep_len;
 		index_list[index_pos++] = index_acum-sep_len;
-		printf(">>index: %d, %s\n", index, s+index_acum);
 	}
 
-	printf("index pos: %d\n", index_pos);
-	*elements = index_pos;
-	str* str_list = malloc(sizeof(struct string_t)*index_pos);
+	str* str_list = malloc(sizeof(struct string_t)*(index_pos+1));
 	for (int i = 0; i < index_pos; i++) {
 		str_list[i] = str_new("");
 		if (i == 0) {
@@ -237,9 +234,11 @@ str* str_split(str s, const char* sep, int* elements) {
 		}
 		str_list[i] = str_concat_len(str_list[i], s+index_list[i-1]+sep_len, index_list[i] - index_list[i-1] - sep_len);
 	}
-
-	for (int i = 0; i < *elements; i++) {
-		printf("string: %s; len:%zu\n", str_list[i], str_len(str_list[i]));
-	}
+	// manually do last one
+	char* str_temp = s+index_list[index_pos-1]+sep_len;
+	str_list[index_pos] = str_new("");
+	str_list[index_pos] = str_concat_len(str_list[index_pos], str_temp, str_len(str_temp));
+	
+	*elements = index_pos+1;
 	return str_list;
 }
