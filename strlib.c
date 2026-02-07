@@ -234,7 +234,7 @@ str* str_split(str s, const char* sep, int* elements) {
 		}
 		str_list[i] = str_concat_len(str_list[i], s+index_list[i-1]+sep_len, index_list[i] - index_list[i-1] - sep_len);
 	}
-	// manually do last one
+	// manually do last one or first one if no match found
 	char* str_temp = s+index_list[index_pos-1]+sep_len;
 	str_list[index_pos] = str_new("");
 	str_list[index_pos] = str_concat_len(str_list[index_pos], str_temp, str_len(str_temp));
