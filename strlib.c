@@ -52,8 +52,8 @@ void str_set_len(str s, size_t len) {
 
 str str_grow(str s, size_t len) {
 	size_t header_size = sizeof(struct string_t);
-	// TODO: use str_header
-	struct string_t *sh = (void*)((s)-(sizeof(struct string_t)));
+	// struct string_t *sh = (void*)((s)-(sizeof(struct string_t)));
+	struct string_t *sh = str_header(s);
 
 	size_t space = sh->cap - sh->len;
 	if (space >= len) return s;
