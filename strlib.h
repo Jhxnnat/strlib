@@ -27,5 +27,7 @@ int str_find_sub(str s, const char* substr);
 str str_insert(str s, const char* ins, size_t pos); // returns the same string if position overflows
 str str_replace(str s, const char* dest, const char* src);
 str* str_split(str s, const char* sep, int* elements); // free up to caller
+str str_uppercase(str s);
+str str_lowercase(str s);
 
 #endif // strlib_h

@@ -52,7 +52,6 @@ void str_set_len(str s, size_t len) {
 
 str str_grow(str s, size_t len) {
 	size_t header_size = sizeof(struct string_t);
-	// struct string_t *sh = (void*)((s)-(sizeof(struct string_t)));
 	struct string_t *sh = str_header(s);
 
 	size_t space = sh->cap - sh->len;
@@ -232,7 +231,10 @@ str* str_split(str s, const char* sep, int* elements) {
 			str_list[i] = str_concat_len(str_list[i], s, index_list[i]);
 			continue;
 		}
-		str_list[i] = str_concat_len(str_list[i], s+index_list[i-1]+sep_len, index_list[i] - index_list[i-1] - sep_len);
+		str_list[i] = str_concat_len(
+				str_list[i],
+				s+index_list[i-1]+sep_len,
+				index_list[i] - index_list[i-1] - sep_len);
 	}
 	// manually do last one or first one if no match found
 	char* str_temp = s+index_list[index_pos-1]+sep_len;
@@ -242,3 +244,24 @@ str* str_split(str s, const char* sep, int* elements) {
 	*elements = index_pos+1;
 	return str_list;
 }
+
+str str_uppercase(str s) {
+	for (int i = 0; i < str_len(s); i++) {
+		if (s[i] >= 'a' && s[i] <= 'z') {
+			char c = s[i];
+			s[i] = (char)c-32;
+		}
+	}
+	return s;
+}
+str str_lowercase(str s) {
+	for (int i = 0; i < str_len(s); i++) {
+		if (s[i] >= 'A' && s[i] <= 'Z') {
+			char c = s[i];
+			s[i] = (char)c+32;
+		}
+	}
+	return s;
+}
+
+
