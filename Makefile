@@ -16,7 +16,8 @@ $(DEST): $(OBJ)
 clean:
 	rm -f $(OBJ) $(DEST)
 
-# run: all
-# 	@./$(DEST) $(arg)
+run: all
+	@./$(DEST) $(arg)
 
 .PHONY: all clean
+
