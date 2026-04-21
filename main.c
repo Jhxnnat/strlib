@@ -30,12 +30,23 @@ int main(void) {
 		printf("string: %s; len:%zu\n", slist[i], str_len(slist[i]));
 	}
 	str_free(s);
-	
+
 	s = str_new("hOla  - 123 mUNDo");
 	printf("%s\n", s);
 	s = str_lowercase(s);
 	printf("%s\n", s);
 	str_free(s);
+
+	s = str_new("qwerty");
+	elements = 0;
+	str* slist2 = str_split(s, ".", &elements);
+
+	for (int i = 0; i < elements; i++) {
+		printf("2 string: %s; len:%zu\n", slist2[i], str_len(slist[i]));
+	}
+	
+	str join = str_join(slist2, (size_t)elements, ", ");
+	printf("/%s\n", join);
 
 	return 0;
 }

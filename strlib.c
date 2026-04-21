@@ -264,4 +264,14 @@ str str_lowercase(str s) {
 	return s;
 }
 
+str str_join(str* strs, size_t count, const char* delimitier) {
+	str s = str_new("");
+	if (count == 0 || count == 1) return s;
+
+	for (size_t i = 0; i < count; i++) {
+		s = str_concat(s, strs[i]);
+		if (i < count) s = str_concat(s, delimitier);
+	}
+	return s;
+}
 
