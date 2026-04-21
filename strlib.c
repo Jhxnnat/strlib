@@ -218,6 +218,13 @@ str* str_split(str s, const char* sep, int* elements) {
 	while (true) {
 		int index = str_find_sub(s+index_acum, sep);
 		if (index < 0) {
+			// no separator found
+			if (index_acum == 0) {
+				str* str_list = malloc(sizeof(struct string_t));
+				str_list[0] = str_new(s);
+				*elements = 1;
+				return str_list;
+			}
 			break;
 		}
 		index_acum += index+sep_len;

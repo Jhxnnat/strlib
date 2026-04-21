@@ -29,7 +29,6 @@ str str_replace(str s, const char* dest, const char* src);
 str* str_split(str s, const char* sep, int* elements); // free up to caller
 str str_uppercase(str s);
 str str_lowercase(str s);
-
 str str_join(str* strs, size_t count, const char* delimitier);
 
 #endif // strlib_h
